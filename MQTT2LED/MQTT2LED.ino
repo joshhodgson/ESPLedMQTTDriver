@@ -3,9 +3,9 @@
 
 
 #define RED_PIN D1
-#define GREEN_PIN D2
-#define BLUE_PIN D3
-#define WHITE_PIN D4
+#define GREEN_PIN D3
+#define BLUE_PIN D15
+#define WHITE_PIN D13
 
 
 // Update these with values suitable for your network.
