@@ -91,10 +91,10 @@ void callback(char* topic, byte* payload, unsigned int length) {
     Serial.println("Setting block color");
     Serial.println(message);
 
-    targetRed = message.substring(0, 3).toInt();
-    targetGreen = message.substring(3, 6).toInt();
-    targetBlue = message.substring(6, 9).toInt();
-    targetWhite = message.substring(9, 12).toInt();
+    targetRed = message.substring(0, 3).toInt()*4;
+    targetGreen = message.substring(3, 6).toInt()*4;
+    targetBlue = message.substring(6, 9).toInt()*4;
+    targetWhite = message.substring(9, 12).toInt()*4;
     targetN = message.substring(12).toInt() / 10;
     if (targetN > 0) {
       fading = true;
