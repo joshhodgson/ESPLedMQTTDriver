@@ -1,6 +1,5 @@
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
-#include <Adafruit_NeoPixel.h>
 
 
 #define RED_PIN D1
@@ -9,15 +8,12 @@
 #define WHITE_PIN D4
 
 
-
-
-
-
 // Update these with values suitable for your network.
-
 const char* ssid = "****";
 const char* password = "*****";
 const char* mqtt_server = "192.168.1.15";
+
+
 
 float red = 0.0;
 float green = 0.0;
@@ -35,6 +31,7 @@ char msg[50];
 int value = 0;
 
 void setup() {
+
   Serial.begin(115200);
 
   pinMode(RED_PIN, OUTPUT);
@@ -46,9 +43,6 @@ void setup() {
   analogWrite(GREEN_PIN, 0);
   analogWrite(BLUE_PIN, 0);
   analogWrite(WHITE_PIN, 0);
-
-
-
 
   setup_wifi();
   client.setServer(mqtt_server, 1883);
@@ -77,7 +71,7 @@ void setup_wifi() {
 }
 
 
-
+// This here defines what happens when a message is recieved
 void callback(char* topic, byte* payload, unsigned int length) {
   String message = "";
   Serial.print("Message arrived [");
@@ -92,8 +86,8 @@ void callback(char* topic, byte* payload, unsigned int length) {
   String thistopic = String(topic);
   Serial.println(thistopic);
 
-  // BLOCK COLOUR - rrrgggbbbwww
-  if (thistopic == "home/lights/tvlights/block") {
+  // BLOCK COLOUR - rrrgggbbbwwwtt...ttt where 0<=rrr<=255 and t measured in miliseconds
+  if (thistopic == "home/lights/kitchen/block") {
     Serial.println("Setting block color");
     Serial.println(message);
 
@@ -130,12 +124,12 @@ void reconnect() {
   while (!client.connected()) {
     Serial.print("Attempting MQTT connection...");
     // Attempt to connect
-    if (client.connect("tvlightesp", "home/status/connections/tvlight", 0, false, "disconnected")) {
+    if (client.connect("kitchenlightsesp", "home/status/connections/kitchen", 0, false, "disconnected")) {
       Serial.println("connected");
       // Once connected, publish an announcement...
-      client.publish("home/status/connections/tvlight", "connected");
+      client.publish("home/status/connections/kitchen", "connected");
       // ... and resubscribe
-      client.subscribe("home/lights/tvlights/#");
+      client.subscribe("home/lights/kitchen/#");
     } else {
       Serial.print("failed, rc=");
       Serial.print(client.state());
@@ -152,6 +146,7 @@ void loop() {
   }
   client.loop();
   if (fading) {
+
     int n = 0;
     float deltaRed = (targetRed - red) / targetN;
     float deltaGreen = (targetGreen - green) / targetN;
@@ -168,6 +163,7 @@ void loop() {
       analogWrite(GREEN_PIN, (int)green);
       analogWrite(BLUE_PIN, (int)blue));
       analogWrite(WHITE_PIN, (int)white));
+
       n += 1;
       if (n >= targetN) {
         n = 0;
@@ -175,11 +171,7 @@ void loop() {
       }
       delay(10);
       client.loop();
-
     }
-
   }
-
-  yield();
-
+  yield(); //for good measure
 }
